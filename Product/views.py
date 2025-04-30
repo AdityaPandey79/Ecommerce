@@ -7,8 +7,7 @@ from .serializers import ProductSerializer
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticated]  # All users must be authenticated
-
+    permission_classes = [IsAuthenticated]  
     def get_permissions(self):
         """
         Modify permissions based on action:

@@ -1,18 +1,16 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import  get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-
 from django.contrib.auth.models import User
 from user.serializers import UserSerializer
-from Category.models import Category
-from Category.serializers import CategorySerializer
+
 
 # View to get JWT token
 class MyTokenObtainPairView(TokenObtainPairView):
-    pass  # You can customize token claims later if needed
+    pass  
 
 # View to refresh JWT token
 class MyTokenRefreshView(TokenRefreshView):
@@ -20,10 +18,10 @@ class MyTokenRefreshView(TokenRefreshView):
 
 # View that only admin can access (to manage users)
 class UserView(APIView):
-    permission_classes = [IsAuthenticated, IsAdminUser]  # Only admins can access
+    permission_classes = [IsAuthenticated, IsAdminUser]  
 
     def get(self, request, *args, **kwargs):
-        user_id = kwargs.get('pk')  # optional parameter
+        user_id = kwargs.get('pk')  
         if user_id:
             user = get_object_or_404(User, pk=user_id)
             serializer = UserSerializer(user)
