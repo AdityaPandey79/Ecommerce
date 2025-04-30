@@ -37,9 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "Category",
-    'Product',
     'rest_framework',
+    'rest_framework_simplejwt',  # Add the simplejwt app for JWT authentication
+    'Category',
+    "user",
+    'Product',
 ]
 
 MIDDLEWARE = [
@@ -70,6 +72,28 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'Task1.wsgi.application'
+
+
+# REST framework settings
+REST_FRAMEWORK = {
+    # Use SimpleJWT for authentication
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',  # JWT authentication
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  # By default, users need to be authenticated
+    ],
+}
+from datetime import timedelta
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # Access token expires after 1 hour
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # Refresh token expires after 1 day
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256',  # You can change the algorithm if needed
+    'SIGNING_KEY': 'your-secret-key-here',  # Keep it secret, change this to a real key
+    'AUTH_HEADER_TYPES': ('Bearer',),  # The Authorization header will contain 'Bearer <token>'
+}
 
 
 # Database

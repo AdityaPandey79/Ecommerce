@@ -13,12 +13,12 @@ class Product(models.Model):
 
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='products_created')
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='products_created')
     created_at = models.DateTimeField(auto_now_add=True)
 
-    updated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='products_updated')
+    updated_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='products_updated')
     updated_at = models.DateTimeField(auto_now=True)
 
 
     def __str__(self):
-        return self.name
+        return f"{self.name}--{self.description}--{self.is_active}"
