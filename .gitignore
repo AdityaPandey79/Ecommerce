@@ -10,5 +10,5 @@ __pycache__/
 .idea/
 /venv/
 /.env/
-/.django_env/
+/django_env/
 
