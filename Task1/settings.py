@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'Category',
     'user',
     'Product',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -84,6 +85,18 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',  # By default, users need to be authenticated
     ],
 }
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+            'description': 'Enter JWT with **Bearer** prefix, e.g., Bearer <your_token>',
+        }
+    }
+}
+
 from datetime import timedelta
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # Access token expires after 1 hour

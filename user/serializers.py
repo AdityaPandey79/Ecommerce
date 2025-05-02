@@ -5,3 +5,14 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
+
+    def create(self, validated_data):
+            user = User.objects.create_user(
+                username=validated_data['username'],
+                password=validated_data['password'],
+                first_name=validated_data.get('first_name', ''),
+                last_name=validated_data.get('last_name', '')
+            )
+            # user.is_staff = True  # set staff to True so they can log into admin panel
+            # user.save()
+            # return user
