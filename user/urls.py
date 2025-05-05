@@ -1,8 +1,13 @@
-from django.urls import path
-from .views import MyTokenObtainPairView, MyTokenRefreshView, UserView
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from user.views import MyTokenObtainPairView, MyTokenRefreshView, UserViewSet
+
+# Set up the router
+router = DefaultRouter()
+router.register('users', UserViewSet, basename='user')  # Register the UserViewSet
 
 urlpatterns = [
-    path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('login/', MyTokenObtainPairView.as_view(), name='user_login_token'),
     path('token/refresh/', MyTokenRefreshView.as_view(), name='token_refresh'),
-    path('user-view/', UserView.as_view(), name='user-view'),
+    path('', include(router.urls)),  # Includes the URLs for the viewset
 ]

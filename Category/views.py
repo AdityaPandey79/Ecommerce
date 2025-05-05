@@ -12,6 +12,12 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer  # Use CategorySerializer to format the response
     permission_classes = [IsAuthenticated]  # Default permission class: Only authenticated users can access
 
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user, updated_by=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(updated_by=self.request.user)
+
     def get_permissions(self):
         
         if self.action in ['create', 'update', 'destroy']:
