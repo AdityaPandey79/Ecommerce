@@ -9,6 +9,7 @@ Features:
 - ✅ Custom User Management
 - ✅ Admin-only create/update/delete permissions
 - ✅ Read/search access for non-admin users
+- ✅ Sends welcome email to user after successful login.
 - ✅ RESTful APIs for:
   - Categories
   - Products
