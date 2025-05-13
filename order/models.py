@@ -13,6 +13,8 @@ class Order(models.Model):
         ('shipped', 'Shipped'),
         ('dispatched', 'Dispatched'),
         ('delivered', 'Delivered'),
+        ('cancelled', 'Cancelled'),
+        ('out_for_delivery', 'Out for Delivery'),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -27,7 +29,6 @@ class Order(models.Model):
     def __str__(self):
         return f'Order #{self.id} by {self.user.username}'
     def save(self, *args, **kwargs):
-        # Calculate the total price based on quantity and product price
         if self.product and self.quantity:
             self.total_price = self.product.price * self.quantity
         super(Order, self).save(*args, **kwargs)

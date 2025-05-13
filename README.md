@@ -10,7 +10,9 @@ Features:
 - ✅ Admin-only create/update/delete permissions
 - ✅ Read/search access for non-admin users
 - ✅ Sends welcome email to user after successful login.
+- ✅ User can order,track and cancel orders.
 - ✅ RESTful APIs for:
   - Categories
   - Products
   - Users
+  - Order

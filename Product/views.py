@@ -18,7 +18,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             return [IsAdminUser()]  # Only admins can create, update, or destroy
         return super().get_permissions()  # Allow authenticated users to view details
 
-    # POST: Create single or multiple products (Admins only)
+    # POST
     def create(self, request, *args, **kwargs):
         is_many = isinstance(request.data, list)
         serializer = self.get_serializer(data=request.data, many=is_many)
@@ -26,13 +26,13 @@ class ProductViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    # GET: Retrieve a single product (Available to any authenticated user)
+    # GET
     def retrieve(self, request, pk=None):
         product = self.get_object()
         serializer = self.get_serializer(product)
         return Response(serializer.data)
 
-    # PUT: Full update of a product (Admins only)
+    # PUT: Full update 
     def update(self, request, pk=None):
         product = self.get_object()
         serializer = self.get_serializer(product, data=request.data)
@@ -40,7 +40,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         serializer.save()
         return Response(serializer.data)
 
-    # DELETE: Delete a product (Admins only)
+    # DELETE
     def destroy(self, request, pk=None):
         product = self.get_object()
         product.delete()

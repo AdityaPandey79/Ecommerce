@@ -23,11 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-o*$_b)^&=ev&g4h!a5k18g8+q=f_jyj#m2n$grt_u5=m7_r&v1'
-
+SECRET_KEY = os.getenv('SECRET_KEY', 'fallback-secret-key-for-dev')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 ALLOWED_HOSTS = []
 
 
@@ -103,11 +101,11 @@ SWAGGER_SETTINGS = {
 
 from datetime import timedelta
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # Access token expires after 1 hour
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # Refresh token expires after 1 day
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
-    'ALGORITHM': 'HS256',  # You can change the algorithm if needed
+    'ALGORITHM': 'HS256',  
     'SIGNING_KEY': 'your-secret-key-here',  # Keep it secret, change this to a real key
     'AUTH_HEADER_TYPES': ('Bearer',),  # The Authorization header will contain 'Bearer <token>'
 }
@@ -166,9 +164,9 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Email settings using Gmail
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' #Replace console with smtp
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = os.getenv('EMAIL_PORT', 587)
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', True) == 'True'
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
