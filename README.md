@@ -14,3 +14,4 @@ Features:
   - Categories
   - Products
   - Users
+  - Order
