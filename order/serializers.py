@@ -3,10 +3,14 @@ from .models import Order
 
 
 class OrderSerializer(serializers.ModelSerializer):
+    quantity = serializers.IntegerField(
+        min_value=1,  
+        max_value=1000 
+    )
     class Meta:
         model = Order
         fields = '__all__'
-        read_only_fields = ['user', 'order_status', 'created_at', 'updated_at']
+        read_only_fields = ['user', 'order_status', 'created_at', 'updated_at','is_cancelled']
 
 
 class DeliveryStatusSerializer(serializers.ModelSerializer):

@@ -43,30 +43,37 @@ def send_welcome_email_task(user_id):
         logger.error(f"[USER NOT FOUND] ID {user_id}")
         return f"User with ID {user_id} does not exist. Email not sent."
     _
-@shared_task (name='send_inactive_users_email_task')
+@shared_task(name='send_inactive_users_email_task')
 def send_inactive_users_email_task():
     try:
-        #users not logged in for 24 hours
         logger.info("[TASK STARTED] Sending inactive user emails")
         one_day_ago = timezone.now() - timedelta(days=1)
-        inactive_users = User.objects.filter(last_login__lt=one_day_ago).exclude(email='')
+        logger.info(f"Querying users with last_login < {one_day_ago}")
 
+        inactive_users = User.objects.filter(last_login__lt=one_day_ago).exclude(email='')
         logger.info(f"Found {inactive_users.count()} inactive users")
 
-        for user in inactive_users:
-            subject = "We Miss You!"
-            message = (
-                f"Hi {user.username},\n\n"
-                "It's been a while since you visited us.\n"
-                "Come back and see what's new!\n\n"
-                "Best regards,\n"
-                "The E-Commerce Team"
-            )
-            from_email = settings.DEFAULT_FROM_EMAIL
-            recipient_list = [user.email]
+        if inactive_users.exists():
+            for user in inactive_users:
+                logger.info(f"Inactive user: {user.username} (last_login: {user.last_login})")
+                subject = "We Miss You!"
+                message = (
+                    f"Hi {user.username},\n\n"
+                    "It's been a while since you visited us.\n"
+                    "Come back and see what's new!\n\n"
+                    "Best regards,\n"
+                    "The E-Commerce Team"
+                )
+                from_email = settings.DEFAULT_FROM_EMAIL
+                recipient_list = [user.email]
 
-            send_mail(subject, message, from_email, recipient_list)
-            logger.info(f"Inactive user email sent to {user.email}")
+                try:
+                    send_mail(subject, message, from_email, recipient_list)
+                    logger.info(f"Inactive user email sent to {user.email}")
+                except Exception as e:
+                    logger.error(f"Failed to send email to {user.email}: {str(e)}", exc_info=True)
+        else:
+            logger.info("No inactive users found.")
 
         return f"Sent re-engagement email to {inactive_users.count()} users"
 

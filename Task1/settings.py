@@ -216,6 +216,11 @@ LOGGING = {
             'level': 'INFO',
             'propagate': False,
         },
+        'products': {  # Add this block for the products app
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
         '': {
             'handlers': ['console', 'file'],
             'level': 'INFO',

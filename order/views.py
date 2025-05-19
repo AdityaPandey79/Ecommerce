@@ -6,6 +6,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .models import Order
+from django.core.exceptions import ValidationError
+from Product.models import Product
 from .serializers import OrderSerializer, DeliveryStatusSerializer, CancelOrderSerializer
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -18,16 +20,54 @@ class OrderViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
 
     @swagger_auto_schema(
-        request_body=OrderSerializer,
-        responses={201: OrderSerializer}
-    )
+    request_body=OrderSerializer,
+    responses={201: OrderSerializer}
+)
     @action(detail=False, methods=['post'], url_path='place-order')
     def place_order(self, request):
         serializer = OrderSerializer(data=request.data)
+        
         if serializer.is_valid():
-            serializer.save(user=request.user)
-            logger.info(f"Order placed by {request.user.username}: {serializer.data}")
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            # Extract product and quantity from validated data
+            product_id = serializer.validated_data.get('product').product_id
+            quantity = serializer.validated_data.get('quantity')
+            
+            try:
+                # Fetch the product
+                product = Product.objects.get(product_id=product_id)
+                
+                # Validate stock availability
+                if product.quantity < quantity:
+                    logger.warning(f"Failed to place order. Insufficient stock for product ID {product_id}")
+                    return Response(
+                        {"error": f"Sorry, we only have {product.quantity} units of {product.name} in stock."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                
+                # Deduct stock
+                product.quantity -= quantity
+                product.save()
+                
+                # Log low stock warning if necessary
+                if product.quantity <= 10:
+                    logger.warning(f"'{product.name}' is about to get out of stock. Current stock: {product.quantity}")
+                
+                # Save the order with the user
+                serializer.save(user=request.user)
+                logger.info(f"Order placed by {request.user.username}: {serializer.data}")
+                
+                return Response({"detail":"Order placed successfully !"}, status=status.HTTP_201_CREATED)
+            
+            except Product.DoesNotExist:
+                logger.error(f"Product with ID {product_id} not found.")
+                return Response(
+                    {"error": "Product not found."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            except ValidationError as e:
+                logger.error(f"Validation error while placing order: {str(e)}")
+                return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
         logger.warning(f"Failed to place order. Errors: {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -90,9 +130,14 @@ class OrderViewSet(viewsets.ViewSet):
         serializer = CancelOrderSerializer(data=request.data)
         if serializer.is_valid():
             reason = serializer.validated_data.get('reason')
+            order.cancel_order()
             order.order_status = 'cancelled'
             order.save()
-            logger.info(f"Order {pk} cancelled by {request.user.username} for reason: {reason}")
+            product = order.product
+            logger.info(
+            f"Order {pk} cancelled by {request.user.username} for reason: {reason}. "
+            f"Updated stock for product '{product.name}' (ID: {product.product_id}): {product.quantity}"
+            )   
             return Response({"detail": "Order cancelled successfully."})
         logger.warning(f"Failed to cancel order {pk}. Validation error: {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
