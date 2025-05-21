@@ -14,8 +14,8 @@ app.autodiscover_tasks()
 
 app.conf.beat_schedule = {
     'daily-inactive-user-email': {
-        'task': 'user.tasks.send_inactive_users_email',
-        'schedule': timedelta(hours=24),  # can replace with crontab(minute=0, hour=0, day_of_week='mon') for weekly
+        'task': 'send_inactive_users_email_task',
+        'schedule': crontab(hour=11, minute=11),  # can replace with crontab(minute=0, hour=0, day_of_week='mon') for weekly
         'args': (),
     },
 }

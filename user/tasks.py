@@ -42,7 +42,7 @@ def send_welcome_email_task(user_id):
     except User.DoesNotExist:
         logger.error(f"[USER NOT FOUND] ID {user_id}")
         return f"User with ID {user_id} does not exist. Email not sent."
-    _
+    
 @shared_task(name='send_inactive_users_email_task')
 def send_inactive_users_email_task():
     try:
